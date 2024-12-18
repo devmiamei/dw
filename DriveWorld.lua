@@ -194,7 +194,7 @@ task.spawn(function()
             end
             repeat task.wait(.1)
                 if job.Visible == false then
-                    ReplicatedStorage:WaitForChild("Systems"):WaitForChild("Jobs"):WaitForChild("StartJob"):InvokeServer(workspace:WaitForChild("Jobs"):WaitForChild("5ace"),workspace:WaitForChild("Jobs"):WaitForChild("5ace"):WaitForChild("StartPoints"):WaitForChild("Logs"))
+                    ReplicatedStorage:WaitForChild("Systems"):WaitForChild("Jobs"):WaitForChild("StartJob"):InvokeServer(workspace:WaitForChild("Jobs"):WaitForChild("5ace"),workspace:WaitForChild("Jobs"):WaitForChild("5ace"):WaitForChild("StartPoints"))
                 end
             until job.Visible == true or Driveworld["autodelivery"] == false
             print("Start Job")
@@ -203,7 +203,7 @@ task.spawn(function()
                     jobDistance = getjobdistance(workspace:FindFirstChild("CompletionRegion"):FindFirstChild("Primary"):FindFirstChild("DestinationIndicator"):FindFirstChild("Distance").Text)
                 end
                 if jobDistance and tonumber(jobDistance) < 2.1 then
-                    ReplicatedStorage:WaitForChild("Systems"):WaitForChild("Jobs"):WaitForChild("StartJob"):InvokeServer(workspace:WaitForChild("Jobs"):WaitForChild("5ace"),workspace:WaitForChild("Jobs"):WaitForChild("5ace"):WaitForChild("StartPoints"):WaitForChild("Logs"))
+                    ReplicatedStorage:WaitForChild("Systems"):WaitForChild("Jobs"):WaitForChild("StartJob"):InvokeServer(workspace:WaitForChild("Jobs"):WaitForChild("5ace"),workspace:WaitForChild("Jobs"):WaitForChild("5ace"):WaitForChild("StartPoints"))
                 end
             until jobDistance and tonumber(jobDistance) >= 2.1 or Driveworld["autodelivery"] == false
             for i = 1, 40 do
