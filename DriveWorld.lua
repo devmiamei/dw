@@ -119,53 +119,6 @@ Main:Toggle({
     end
 })
 
-task.spawn(function()
-    while task.wait() do
-        if Driveworld["autodeliveryfood"] then
-            if isvehicle() == false then
-                if not getvehicle() then
-                    spawnvehicle()
-                end
-                getchar().HumanoidRootPart.CFrame = getvehicle().PrimaryPart.CFrame
-                task.wait(1)
-                VirtualInputManager:SendKeyEvent(true, "E", false, game)
-                VirtualInputManager:SendKeyEvent(false, "E", false, game)
-            end
-            local completepos
-            local CompletionRegion
-            local job = lp.PlayerGui.Score.Frame.Jobs
-            repeat task.wait()
-                if job.Visible == false then
-                    Systems:WaitForChild("Jobs"):WaitForChild("StartJob"):InvokeServer(workspace:WaitForChild("Jobs"):WaitForChild("FoodDelivery"), workspace:WaitForChild("Jobs"):WaitForChild("FoodDelivery"):WaitForChild("StartPoints"):WaitForChild("ClubManta"))
-                end
-            until job.Visible == true or Driveworld["autodeliveryfood"] == false
-            repeat task.wait(.1)
-                if workspace:FindFirstChild("CompletionRegion") then
-                    CompletionRegion = workspace:FindFirstChild("CompletionRegion")
-                end
-            until CompletionRegion or Driveworld["autodeliveryfood"] == false
-            for i = 1, 20 do
-                if not Driveworld["autodeliveryfood"] or not getvehicle() or not getchar() or isvehicle() == false or job.Visible == false then
-                    break
-                end
-                task.wait(1)
-            end
-            if CompletionRegion:FindFirstChild("Primary").CFrame then
-                completepos = CompletionRegion:FindFirstChild("Primary").CFrame * CFrame.new(0,3,0)
-            end
-            getvehicle():SetPrimaryPartCFrame(completepos)
-            task.wait(.5)
-            Systems:WaitForChild("Jobs"):WaitForChild("CompleteJob"):InvokeServer()
-            task.wait(.5)
-            if lp.PlayerGui.JobComplete.Enabled == true then
-                Systems:WaitForChild("Jobs"):WaitForChild("CashBankedEarnings"):FireServer()
-                for i,v in next, getconnections(lp.PlayerGui.JobComplete.Window.Content.Buttons.CloseButton.MouseButton1Click) do
-                    v:Fire()
-                end
-            end
-        end
-    end
-end)
 
 task.spawn(function()
     while task.wait(.1) do
@@ -194,7 +147,7 @@ task.spawn(function()
             end
             repeat task.wait(.1)
                 if job.Visible == false then
-                    ReplicatedStorage:WaitForChild("Systems"):WaitForChild("Jobs"):WaitForChild("StartJob"):InvokeServer(workspace:WaitForChild("Jobs"):WaitForChild("5ace"),workspace:WaitForChild("Jobs"):WaitForChild("5ace"):WaitForChild("StartPoints"))
+                    ReplicatedStorage:WaitForChild("Systems"):WaitForChild("Jobs"):WaitForChild("RequestJobStart"):InvokeServer(workspace:WaitForChild("Jobs"):WaitForChild("5ace"),workspace:WaitForChild("Jobs"):WaitForChild("5ace"):WaitForChild("StartPoints"))
                 end
             until job.Visible == true or Driveworld["autodelivery"] == false
             print("Start Job")
@@ -203,7 +156,7 @@ task.spawn(function()
                     jobDistance = getjobdistance(workspace:FindFirstChild("CompletionRegion"):FindFirstChild("Primary"):FindFirstChild("DestinationIndicator"):FindFirstChild("Distance").Text)
                 end
                 if jobDistance and tonumber(jobDistance) < 2.1 then
-                    ReplicatedStorage:WaitForChild("Systems"):WaitForChild("Jobs"):WaitForChild("StartJob"):InvokeServer(workspace:WaitForChild("Jobs"):WaitForChild("5ace"),workspace:WaitForChild("Jobs"):WaitForChild("5ace"):WaitForChild("StartPoints"))
+                    ReplicatedStorage:WaitForChild("Systems"):WaitForChild("Jobs"):WaitForChild("RequestJobStart"):InvokeServer(workspace:WaitForChild("Jobs"):WaitForChild("5ace"),workspace:WaitForChild("Jobs"):WaitForChild("5ace"):WaitForChild("StartPoints"))
                 end
             until jobDistance and tonumber(jobDistance) >= 2.1 or Driveworld["autodelivery"] == false
             for i = 1, 40 do
@@ -229,84 +182,6 @@ task.spawn(function()
     end
 end)
 
-task.spawn(function()
-    while task.wait(.1) do
-        if Driveworld["autodeliverymaterial"] and material then
-            local cargo
-            local completepos
-            local CompletionRegion
-            local Contracts = lp.PlayerGui.Score.Frame.Contracts
-            if isvehicle() == false then
-                if not getvehicle() then
-                    spawnvehicle()
-                end
-                getchar().HumanoidRootPart.CFrame = getvehicle().PrimaryPart.CFrame
-                task.wait(1)
-                VirtualInputManager:SendKeyEvent(true, "E", false, game)
-                VirtualInputManager:SendKeyEvent(false, "E", false, game)
-            end
-            repeat task.wait(.1)
-                if Contracts.Visible == false then
-                    ReplicatedStorage:WaitForChild("Systems"):WaitForChild("Contracts"):WaitForChild("PrecalculateRoutes"):InvokeServer()
-                    task.wait(.5)        
-                    ReplicatedStorage:WaitForChild("Systems"):WaitForChild("Contracts"):WaitForChild("StartContract"):InvokeServer(material)
-                end
-            until Contracts.Visible == true or Driveworld["autodeliverymaterial"] == false
-            task.wait(1)
-            repeat task.wait(.5)
-                for i,v in next, workspace:GetChildren() do
-                    if v.Name == "Model" and (v:FindFirstChild("SteelPalettes") or v:FindFirstChild("WoodCrates") or v:FindFirstChild("ShippingCargo")) and v:FindFirstChildWhichIsA("Model").PrimaryPart then
-                        cargo = v:FindFirstChildWhichIsA("Model").PrimaryPart
-                    end
-                end
-            until cargo or Driveworld["autodeliverymaterial"] == false
-            if lp.PlayerGui.GarageContracts.Frame.ContractFinished.Visible == true then
-                for i,v in next, getconnections(lp.PlayerGui.GarageContracts.Frame.Header.CloseButton.MouseButton1Click) do
-                    v:Fire()
-                end
-            end
-            if lp.PlayerGui.CancelActivityConfirmation.Enabled == true then
-                for i,v in next, getconnections(lp.PlayerGui.CancelActivityConfirmation.Window.Content.Buttons.Cancel.MouseButton1Click) do
-                    v:Fire()
-                end
-            end
-            if cargo and getvehicle() and getvehicle().PrimaryPart then
-                getvehicle():SetPrimaryPartCFrame(cargo.CFrame)
-                task.wait(1)
-                if (cargo.Position - getvehicle().PrimaryPart.Position).magnitude <= 30 then
-                    VirtualInputManager:SendKeyEvent(true, "E", false, game)
-                end
-            end
-            task.wait(1)
-            if lp.PlayerGui.CancelActivityConfirmation.Enabled == true then
-                for i,v in next, getconnections(lp.PlayerGui.CancelActivityConfirmation.Window.Content.Buttons.Cancel.MouseButton1Click) do
-                    v:Fire()
-                end
-            end
-            local count = 0
-            repeat task.wait(.1)
-                if workspace:FindFirstChild("CompletionRegion") then
-                    CompletionRegion = workspace.CompletionRegion
-                end
-                count = count + 1
-            until CompletionRegion or Driveworld["autodeliverymaterial"] == false or count >= 50
-            if CompletionRegion and CompletionRegion:FindFirstChild("Primary").CFrame then
-                completepos = CompletionRegion:FindFirstChild("Primary").CFrame * CFrame.new(0,3,0)
-            end
-            for i = 1, 27 do
-                if not Driveworld["autodeliverymaterial"] or not getvehicle() or not getchar() or isvehicle() == false or Contracts.Visible == false then
-                    break
-                end
-                task.wait(1)
-            end
-            if completepos then
-                getvehicle():SetPrimaryPartCFrame(completepos)
-                task.wait(1)
-                ReplicatedStorage:WaitForChild("Systems"):WaitForChild("Contracts"):WaitForChild("DropoffCargo"):InvokeServer()
-            end
-        end
-    end
-end)
 
 GUI:Credit{
     Name = "x3Fall3nAngel",
